@@ -15,13 +15,22 @@ CREATE TABLE students
     graduate BOOLEAN
 );
 
+
 CREATE TABLE classes
 (
     id SERIAL PRIMARY KEY,
     mentor_id INT REFERENCES mentors(id),
     topic VARCHAR(40) NOT NULL,
     date DATE NOT NULL
-)
+);
+
+CREATE TABLE attendants
+(
+    id SERIAL PRIMARY KEY,
+    student_id INT REFERENCES students(id),
+    class_id INT REFERENCES classes(id)
+);
+
 
 INSERT INTO mentors
     (name, in_glasgow, address, fav_lang)
@@ -73,8 +82,65 @@ INSERT INTO students
 VALUES
     ('AB', '12/1 street', FALSE);
 
+INSERT INTO classes
+    (mentor_id, topic, date)
+VALUES
+    (2, 'JS', '2020-01-10');
+INSERT INTO classes
+    (mentor_id, topic, date)
+VALUES
+    (2, 'JS', '2020-01-17');
+INSERT INTO classes
+    (mentor_id, topic, date)
+VALUES
+    (2, 'JS', '2020-01-24');
+
+
+INSERT INTO attendants
+    (student_id, class_id)
+VALUES
+    (1, 1);
+
+INSERT INTO attendants
+    (student_id, class_id)
+VALUES
+    (2, 1);
+
+INSERT INTO attendants
+    (student_id, class_id)
+VALUES
+    (4, 1);
+
+INSERT INTO attendants
+    (student_id, class_id)
+VALUES
+    (1, 3);
+
+INSERT INTO attendants
+    (student_id, class_id)
+VALUES
+    (4, 3);
+
 SELECT *
 FROM mentors;
 
 SELECT *
 FROM students;
+
+SELECT *
+FROM attendants;
+
+select *
+from classes;
+
+select name
+from mentors
+where fav_lang = 'JS';
+
+select name
+from students
+where graduate = 'TRUE';
+
+select student_id
+from attendants
+where class_id = 1;
