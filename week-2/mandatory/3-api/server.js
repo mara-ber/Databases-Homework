@@ -6,7 +6,7 @@ const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
     database: 'cyf_ecommerce',
-    password: 'postgress',
+    password: 'password',
     port: 5432
 });
 
@@ -18,6 +18,12 @@ app.get("/customers", (req, res) => {
 
 app.get("/suppliers", (req, res) => {
     pool.query('SELECT * FROM suppliers', (error, result) => {
+        res.json(result.rows);
+    });
+});
+
+app.get("/products", (req, res) => {
+    pool.query('SELECT product_name, supplier_name FROM products INNER JOIN suppliers ON supplier_id=suppliers.id', (error, result) => {
         res.json(result.rows);
     });
 });
