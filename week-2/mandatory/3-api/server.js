@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const { Pool } = require('pg');
+app.use(express.json());
 
 const pool = new Pool({
     user: 'postgres',
@@ -51,6 +52,26 @@ app.get("/products", function (req, res) {
         });
     }
 });
+
+app.post('/customers', (req, res) => {
+    const newCustomer = req.body.name;
+    const newCustomerAddress = req.body.address;
+    const newCustomerCity = req.body.city;
+    const newCustomerCountry = req.body.country;
+
+    pool
+        .query("SELECT * FROM customers WHERE name=$1", [newCustomer])
+        .then((result) => {
+            if (result.rows.length > 0) {
+                return res.status(400).send("Existing customer");
+            }
+            const query = "INSERT INTO customers (name, address, city, country) VALUES ($1, $2, $3, $4)";
+            pool
+                .query(query, [newCustomer, newCustomerAddress, newCustomerCity, newCustomerCountry])
+                .then(() => res.send("New customer is added"))
+                .catch(() => res.status(400).send("Falled to add a new customer"));
+        });
+})
 
 const listener = app.listen(3000, function () {
     console.log("Your app is listening on port 3000");
