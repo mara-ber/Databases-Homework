@@ -16,17 +16,24 @@ app.get("/customers", (req, res) => {
     });
 });
 
+app.get('/customers/:id', (req, res) => {
+    const customerId = req.params.id;
+    pool.query('select * from customers where id=$1', [customerId])
+        .then((result) => {
+            if (result.rows.length > 0) {
+                return res.json(result.rows);
+            } else {
+                res.status(400).send(`no customer with ID ${customerId}`);
+            }
+        });
+})
+
 app.get("/suppliers", (req, res) => {
     pool.query('SELECT * FROM suppliers', (error, result) => {
         res.json(result.rows);
     });
 });
 
-// app.get("/products", (req, res) => {
-//     pool.query('SELECT product_name, supplier_name FROM products INNER JOIN suppliers ON supplier_id=suppliers.id', (error, result) => {
-//         res.json(result.rows);
-//     });
-// });
 
 app.get("/products", function (req, res) {
     const nameQuery = req.query.name;
