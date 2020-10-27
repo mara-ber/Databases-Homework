@@ -22,10 +22,27 @@ app.get("/suppliers", (req, res) => {
     });
 });
 
-app.get("/products", (req, res) => {
-    pool.query('SELECT product_name, supplier_name FROM products INNER JOIN suppliers ON supplier_id=suppliers.id', (error, result) => {
-        res.json(result.rows);
-    });
+// app.get("/products", (req, res) => {
+//     pool.query('SELECT product_name, supplier_name FROM products INNER JOIN suppliers ON supplier_id=suppliers.id', (error, result) => {
+//         res.json(result.rows);
+//     });
+// });
+
+app.get("/products", function (req, res) {
+    const nameQuery = req.query.name;
+    let query = 'select * from products order by product_name';
+
+    if (nameQuery) {
+        query = "select * from products where product_name like $1 order by product_name";
+        pool.query(query, [`%${nameQuery}%`])
+            .then((result) => {
+                return res.json(result.rows);
+            });
+    } else {
+        pool.query(query, (error, result) => {
+            res.json(result.rows);
+        });
+    }
 });
 
 const listener = app.listen(3000, function () {
